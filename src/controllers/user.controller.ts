@@ -8,7 +8,10 @@ import {
   insertUser,
   updateUserById,
 } from '../services/user.service'
-import { createUserValidation } from '../validations/user.validation'
+import {
+  createUserValidation,
+  updateUserValidation,
+} from '../validations/user.validation'
 
 export const deleteUser = async (req: Request, res: Response) => {
   const user_id = req.params.id
@@ -23,7 +26,7 @@ export const deleteUser = async (req: Request, res: Response) => {
 
 export const updateUser = async (req: Request, res: Response) => {
   const user_id = req.params.id
-  const { error, value } = createUserValidation(req.body)
+  const { error, value } = updateUserValidation(req.body)
 
   if (error) {
     res.status(422).json({ message: error.details[0].message })
