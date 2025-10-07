@@ -1,4 +1,5 @@
 import bodyParser from 'body-parser'
+import cors from 'cors'
 import express, { Application } from 'express'
 
 import { routes } from '../routes'
@@ -9,6 +10,7 @@ export const createServer = () => {
   app.use(bodyParser.urlencoded({ extended: false }))
   app.use(bodyParser.json())
 
+  app.use(cors())
   app.use((req, res, next) => {
     res.setHeader('Access-Control-Allow-Origin', '*')
     res.setHeader('Access-Control-Allow-Methods', '*')
