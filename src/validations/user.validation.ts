@@ -2,6 +2,23 @@ import Joi from 'joi'
 
 import { User } from '../types/api'
 
+export const refreshSessionValidation = (payload: User) => {
+  const schema = Joi.object({
+    refreshToken: Joi.string().required(),
+  })
+
+  return schema.validate(payload)
+}
+
+export const createSessionValidation = (payload: User) => {
+  const schema = Joi.object({
+    email: Joi.string().required(),
+    password: Joi.string().required(),
+  })
+
+  return schema.validate(payload)
+}
+
 export const updateUserValidation = (payload: User) => {
   const schema = Joi.object({
     name: Joi.string().allow('', null),

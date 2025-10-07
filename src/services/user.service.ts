@@ -1,6 +1,10 @@
 import { UserModel } from '../models/user'
 import { User } from '../types/api'
 
+export const findUserByEmail = async (email: string) => {
+  return await UserModel.findOne({ email })
+}
+
 export const deleteUserById = async (user_id: string) => {
   await getUserById(user_id)
 

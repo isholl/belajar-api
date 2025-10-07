@@ -2,6 +2,7 @@ import bodyParser from 'body-parser'
 import cors from 'cors'
 import express, { Application } from 'express'
 
+import { deserializedToken } from '../middleware/auth'
 import { routes } from '../routes'
 
 export const createServer = () => {
@@ -17,6 +18,8 @@ export const createServer = () => {
     res.setHeader('Access-Control-Allow-Headers', '*')
     next()
   })
+
+  app.use(deserializedToken)
 
   routes(app)
 

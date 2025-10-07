@@ -8,6 +8,7 @@ import {
   insertUser,
   updateUserById,
 } from '../services/user.service'
+import { hashing } from '../utils/hashing'
 import {
   createUserValidation,
   updateUserValidation,
@@ -50,6 +51,8 @@ export const createUser = async (req: Request, res: Response) => {
   }
 
   try {
+    value.password = `${hashing(value.password)}`
+
     await insertUser(value)
     res.status(200).json({ message: 'User created successfully.' })
   } catch (err) {
