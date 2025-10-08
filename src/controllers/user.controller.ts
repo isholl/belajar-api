@@ -19,9 +19,9 @@ export const deleteUser = async (req: Request, res: Response) => {
 
   try {
     await deleteUserById(user_id)
-    res.status(200).json({ message: 'User deleted successfully.' })
+    return res.status(200).json({ message: 'User deleted successfully.' })
   } catch (err) {
-    res.status(500).json({ message: (err as Error).message })
+    return res.status(500).json({ message: (err as Error).message })
   }
 }
 
@@ -30,14 +30,17 @@ export const updateUser = async (req: Request, res: Response) => {
   const { error, value } = updateUserValidation(req.body)
 
   if (error) {
-    res.status(422).json({ message: error.details[0].message })
+    return res.status(422).json({
+      message: 'Validation error',
+      errors: error.details.map(detail => detail.message),
+    })
   }
 
   try {
     await updateUserById(user_id, value)
-    res.status(200).json({ message: 'User updated successfully.' })
+    return res.status(200).json({ message: 'User updated successfully.' })
   } catch (err) {
-    res.status(500).json({ message: (err as Error).message })
+    return res.status(500).json({ message: (err as Error).message })
   }
 }
 
@@ -46,17 +49,19 @@ export const createUser = async (req: Request, res: Response) => {
   const { error, value } = createUserValidation(req.body)
 
   if (error) {
-    res.status(422).json({ message: error.details[0].message })
-    return
+    return res.status(422).json({
+      message: 'Validation error',
+      errors: error.details.map(detail => detail.message),
+    })
   }
 
   try {
     value.password = `${hashing(value.password)}`
 
     await insertUser(value)
-    res.status(200).json({ message: 'User created successfully.' })
+    return res.status(200).json({ message: 'User created successfully.' })
   } catch (err) {
-    res.status(500).json({ message: (err as Error).message })
+    return res.status(500).json({ message: (err as Error).message })
   }
 }
 
@@ -67,18 +72,16 @@ export const getUsers = async (req: Request, res: Response) => {
     if (user_id) {
       const user = await getUserById(user_id)
 
-      res.status(200).json({ data: user })
-      return
+      return res.status(200).json({ data: user })
     }
 
     const users = await getAllUsers()
     if (users.length > 0) {
-      res.status(200).json({ data: users })
-      return
+      return res.status(200).json({ data: users })
     }
 
-    res.status(404).json({ message: 'User is empty.' })
+    return res.status(404).json({ message: 'User is empty.' })
   } catch (err) {
-    res.status(500).json({ message: (err as Error).message })
+    return res.status(500).json({ message: (err as Error).message })
   }
 }

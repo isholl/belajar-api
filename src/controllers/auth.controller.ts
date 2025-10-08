@@ -14,8 +14,7 @@ export const refreshSession = async (req: Request, res: Response) => {
   const { error, value } = refreshSessionValidation(req.body)
 
   if (error) {
-    res.status(422).json({ message: error.details[0].message })
-    return
+    return res.status(422).json({ message: error.details[0].message })
   }
 
   try {
@@ -25,8 +24,7 @@ export const refreshSession = async (req: Request, res: Response) => {
     const user = await findUserByEmail(decoded?._doc.email)
 
     if (!user) {
-      res.status(404).json({ message: 'User not found.' })
-      return
+      return res.status(404).json({ message: 'User not found.' })
     }
 
     const accessToken = signJWT(
@@ -38,12 +36,12 @@ export const refreshSession = async (req: Request, res: Response) => {
       },
     )
 
-    res.status(200).json({
+    return res.status(200).json({
       message: 'Refresh session successfully.',
       data: { accessToken },
     })
   } catch (err) {
-    res.status(500).json({ message: (err as Error).message })
+    return res.status(500).json({ message: (err as Error).message })
   }
 }
 
@@ -51,35 +49,35 @@ export const createSession = async (req: Request, res: Response) => {
   const { error, value } = createSessionValidation(req.body)
 
   if (error) {
-    res.status(422).json({ message: error.details[0].message })
-    return
+    return res.status(422).json({
+      message: 'Validation error',
+      errors: error.details.map(detail => detail.message),
+    })
   }
 
   try {
     const user = await findUserByEmail(value.email)
 
     if (!user || !user.password || !value.password) {
-      res.status(422).json({ message: 'Invalid email or password.' })
-      return
+      return res.status(422).json({ message: 'Invalid email or password.' })
     }
 
     const isValid = checkPassword(value.password, user.password)
 
     if (!isValid) {
-      res.status(401).json({ message: 'Invalid email or password.' })
-      return
+      return res.status(401).json({ message: 'Invalid email or password.' })
     }
 
     const accessToken = signJWT({ ...user }, { expiresIn: '1d' })
 
     const refreshToken = signJWT({ ...user }, { expiresIn: '1y' })
 
-    res.status(200).json({
+    return res.status(200).json({
       message: 'Login success',
       data: { accessToken, refreshToken },
     })
   } catch (err) {
-    res.status(500).json({ message: (err as Error).message })
+    return res.status(500).json({ message: (err as Error).message })
   }
 }
 
@@ -88,15 +86,18 @@ export const registerUser = async (req: Request, res: Response) => {
   const { error, value } = createUserValidation(req.body)
 
   if (error) {
-    res.status(422).json({ message: error.details[0].message })
+    return res.status(422).json({
+      message: 'Validation error',
+      errors: error.details.map(detail => detail.message),
+    })
   }
 
   try {
     value.password = `${hashing(value.password)}`
 
     await insertUser(value)
-    res.status(201).json({ message: 'Register user successfully.' })
+    return res.status(201).json({ message: 'Register user successfully.' })
   } catch (err) {
-    res.status(500).json({ message: (err as Error).message })
+    return res.status(500).json({ message: (err as Error).message })
   }
 }

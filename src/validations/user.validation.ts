@@ -16,7 +16,9 @@ export const createSessionValidation = (payload: User) => {
     password: Joi.string().required(),
   })
 
-  return schema.validate(payload)
+  return schema.validate(payload, {
+    abortEarly: false,
+  })
 }
 
 export const updateUserValidation = (payload: User) => {
@@ -26,7 +28,9 @@ export const updateUserValidation = (payload: User) => {
     password: Joi.string().allow('', null),
   })
 
-  return schema.validate(payload)
+  return schema.validate(payload, {
+    abortEarly: false,
+  })
 }
 
 export const createUserValidation = (payload: User) => {
@@ -37,5 +41,7 @@ export const createUserValidation = (payload: User) => {
     password: Joi.string().required(),
   })
 
-  return schema.validate(payload)
+  return schema.validate(payload, {
+    abortEarly: false,
+  })
 }
