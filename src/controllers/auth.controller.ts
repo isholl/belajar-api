@@ -14,12 +14,20 @@ export const refreshSession = async (req: Request, res: Response) => {
   const { error, value } = refreshSessionValidation(req.body)
 
   if (error) {
-    return res.status(422).json({ message: error.details[0].message })
+    return res.status(422).json({
+      message: 'Validation error.',
+      errors: error.details.map(detail => detail.message),
+    })
   }
 
   try {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const { decoded }: any = veryfiedJWT(value.refreshToken)
+    const { decoded, expired } = veryfiedJWT(value.refreshToken)
+
+    if (expired) return res.status(401).json({ message: 'Token expired.' })
+
+    if (!decoded || typeof decoded !== 'object' || !('_doc' in decoded)) {
+      return res.status(422).json({ message: 'Invalid token structure.' })
+    }
 
     const user = await findUserByEmail(decoded?._doc.email)
 
@@ -50,7 +58,7 @@ export const createSession = async (req: Request, res: Response) => {
 
   if (error) {
     return res.status(422).json({
-      message: 'Validation error',
+      message: 'Validation error.',
       errors: error.details.map(detail => detail.message),
     })
   }
@@ -73,7 +81,7 @@ export const createSession = async (req: Request, res: Response) => {
     const refreshToken = signJWT({ ...user }, { expiresIn: '1y' })
 
     return res.status(200).json({
-      message: 'Login success',
+      message: 'Login success.',
       data: { accessToken, refreshToken },
     })
   } catch (err) {
@@ -87,7 +95,7 @@ export const registerUser = async (req: Request, res: Response) => {
 
   if (error) {
     return res.status(422).json({
-      message: 'Validation error',
+      message: 'Validation error.',
       errors: error.details.map(detail => detail.message),
     })
   }

@@ -12,8 +12,8 @@ export const refreshSessionValidation = (payload: User) => {
 
 export const createSessionValidation = (payload: User) => {
   const schema = Joi.object({
-    email: Joi.string().required(),
-    password: Joi.string().required(),
+    email: Joi.string().email().required(),
+    password: Joi.string().min(6).required(),
   })
 
   return schema.validate(payload, {
@@ -23,9 +23,9 @@ export const createSessionValidation = (payload: User) => {
 
 export const updateUserValidation = (payload: User) => {
   const schema = Joi.object({
-    name: Joi.string().allow('', null),
-    email: Joi.string().allow('', null),
-    password: Joi.string().allow('', null),
+    name: Joi.string().min(3).allow('', null),
+    email: Joi.string().email().allow('', null),
+    password: Joi.string().min(6).allow('', null),
   })
 
   return schema.validate(payload, {
@@ -36,9 +36,9 @@ export const updateUserValidation = (payload: User) => {
 export const createUserValidation = (payload: User) => {
   const schema = Joi.object({
     user_id: Joi.string().required(),
-    name: Joi.string().required(),
-    email: Joi.string().required(),
-    password: Joi.string().required(),
+    name: Joi.string().min(3).required(),
+    email: Joi.string().email().required(),
+    password: Joi.string().min(6).required(),
   })
 
   return schema.validate(payload, {
