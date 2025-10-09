@@ -2,6 +2,7 @@ import 'dotenv/config'
 
 const config = {
   DB: process.env.MONGO_URI,
+  DB_TEST: process.env.MONGO_URI_TEST,
   PORT: process.env.PORT,
   JWT_PRIVATE: `-----BEGIN RSA PRIVATE KEY-----
 MIIEpQIBAAKCAQEAg5JDkKUkl4uB88f/O9djMrdLwnYPjS62zhTWUB6H8YiXR4gV

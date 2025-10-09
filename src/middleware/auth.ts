@@ -24,7 +24,9 @@ export const requireAdmin = (
 ) => {
   const user = res.locals.user
 
-  if (!user || user._doc.role !== 'admin') {
+  // Res.locals.user now contains the decoded JWT payload directly.
+  // Check role on the payload instead of digging into Mongoose internals.
+  if (!user || user.role !== 'admin') {
     res.sendStatus(403)
     return
   }

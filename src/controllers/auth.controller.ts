@@ -25,23 +25,22 @@ export const refreshSession = async (req: Request, res: Response) => {
 
     if (expired) return res.status(401).json({ message: 'Token expired.' })
 
-    if (!decoded || typeof decoded !== 'object' || !('_doc' in decoded)) {
+    if (!decoded || typeof decoded !== 'object') {
       return res.status(422).json({ message: 'Invalid token structure.' })
     }
 
-    const user = await findUserByEmail(decoded?._doc.email)
+    // decoded is expected to be the plain payload we signed earlier
+    const payload = decoded as { email?: string; user_id?: string }
+
+    const user = await findUserByEmail(payload.email || '')
 
     if (!user) {
       return res.status(404).json({ message: 'User not found.' })
     }
 
     const accessToken = signJWT(
-      {
-        ...user,
-      },
-      {
-        expiresIn: '1d',
-      },
+      { role: user.role, user_id: user.user_id, email: user.email },
+      { expiresIn: '1d' },
     )
 
     return res.status(200).json({
@@ -76,9 +75,15 @@ export const createSession = async (req: Request, res: Response) => {
       return res.status(401).json({ message: 'Invalid email or password.' })
     }
 
-    const accessToken = signJWT({ ...user }, { expiresIn: '1d' })
+    const accessToken = signJWT(
+      { role: user.role, user_id: user.user_id, email: user.email },
+      { expiresIn: '1d' },
+    )
 
-    const refreshToken = signJWT({ ...user }, { expiresIn: '1y' })
+    const refreshToken = signJWT(
+      { role: user.role, user_id: user.user_id, email: user.email },
+      { expiresIn: '1y' },
+    )
 
     return res.status(200).json({
       message: 'Login success.',
