@@ -17,7 +17,6 @@ Minimal REST API example built with Express, TypeScript, Mongoose and JWT-based 
 - [Scripts](#scripts)
 - [API endpoints](#api-endpoints)
 - [Testing](#testing)
-- [Notes & recommendations](#notes--recommendations)
 
 ## Requirements
 
